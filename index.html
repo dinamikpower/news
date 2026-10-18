@@ -17,6 +17,8 @@
   --muted: #4F5E69;
   --rule: #C9D2D8;
   --accent: #0A6A62;
+  --alert: #B3261E;
+  --alert-fg: #FFFFFF;
   --band-bg: #0F1B25;
   --band-fg: #EDF1F3;
   --band-muted: #9FB0BC;
@@ -26,13 +28,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0C1217; --surface: #131B21; --ink: #E3EAEE; --muted: #93A3AF; --rule: #25313A;
-    --accent: #5ECDBF; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
+    --accent: #5ECDBF; --alert: #FF8A80; --alert-fg: #1A0705; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0C1217; --surface: #131B21; --ink: #E3EAEE; --muted: #93A3AF; --rule: #25313A;
-  --accent: #5ECDBF; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
+  --accent: #5ECDBF; --alert: #FF8A80; --alert-fg: #1A0705; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
   color-scheme: dark;
 }
 
@@ -147,6 +149,15 @@ h1 {
 .hit h3 { margin: 2px 0 4px; font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.2; }
 .hit p { margin: 0; max-width: 65ch; }
 
+.breaking { background: var(--alert); color: var(--alert-fg); padding: 16px 18px; margin-block: 8px 4px; }
+.breaking h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; }
+.breaking ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.breaking li + li { padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--alert-fg) 30%, transparent); }
+.breaking .bh { font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.breaking .bm { font-size: 13px; opacity: 0.9; }
+.breaking p { margin: 4px 0 0; font-size: 16px; max-width: 65ch; }
+.breaking a { color: inherit; }
+
 .empty { padding: 36px 0; max-width: 52ch; }
 .empty h2 { margin: 0 0 8px; font-family: var(--display); font-size: 28px; }
 .empty p { margin: 0; color: var(--muted); }
@@ -162,6 +173,7 @@ h1 {
     <h1 id="title">Ειδήσεις της ημέρας</h1>
     <p class="stamp" id="stamp"></p>
   </header>
+  <section class="breaking" id="breaking" hidden aria-label="Έκτακτα νέα"></section>
   <nav class="nav" id="nav" aria-label="Θέματα"></nav>
   <main id="app" aria-live="polite">
     <div class="empty"><h2>Φόρτωση…</h2><p>Χρειάζεται JavaScript για να εμφανιστούν οι ειδήσεις.</p></div>
@@ -507,8 +519,44 @@ h1 {
     });
   }
 
+  /* ---------- breaking news ---------- */
+  function renderBreaking() {
+    var box = document.getElementById('breaking');
+    getJSON('data/breaking.json').then(function (b) {
+      var now = Date.now();
+      var items = (b && Array.isArray(b.items) ? b.items : []).filter(function (i) {
+        var t = new Date(i.time).getTime();
+        return i && i.h && !isNaN(t) && now - t < 24 * 3600 * 1000;
+      });
+      if (!items.length) { box.hidden = true; return; }
+      box.replaceChildren();
+      box.append(el('h2', null, 'Έκτακτο'));
+      var ul = el('ul');
+      items.forEach(function (i) {
+        var li = el('li');
+        li.append(el('div', 'bh', i.h));
+        var t = new Date(i.time);
+        li.append(el('div', 'bm', new Intl.DateTimeFormat('el-GR', { weekday: 'long', hour: '2-digit', minute: '2-digit' }).format(t)));
+        if (i.t) li.append(el('p', null, i.t));
+        var u = i.source && safeUrl(i.source.url);
+        if (u) {
+          var p = el('p');
+          var a = el('a', null, i.source.title || u);
+          a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          p.append(a);
+          li.append(p);
+        }
+        ul.append(li);
+      });
+      box.append(ul);
+      box.hidden = false;
+    }).catch(function () { box.hidden = true; });
+  }
+
   window.addEventListener('hashchange', route);
   renderNav('home');
+  renderBreaking();
+  setInterval(renderBreaking, 10 * 60 * 1000);
   route();
 })();
 </script>
