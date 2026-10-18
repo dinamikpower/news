@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Πρωινή Ενημέρωση</title>
+<meta name="description" content="Καθημερινή περίληψη ειδήσεων στα ελληνικά: γεωπολιτική, οικονομία, τεχνολογία, επιστήμη, ιατρική και αρχαιολογία.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@500;700&family=Literata:wght@400;600&display=swap&subset=greek">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #EDF1F3;
+  --surface: #FFFFFF;
+  --ink: #0F1B25;
+  --muted: #4F5E69;
+  --rule: #C9D2D8;
+  --accent: #0A6A62;
+  --band-bg: #0F1B25;
+  --band-fg: #EDF1F3;
+  --band-muted: #9FB0BC;
+  --display: "Fira Sans Extra Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1217; --surface: #131B21; --ink: #E3EAEE; --muted: #93A3AF; --rule: #25313A;
+    --accent: #5ECDBF; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1217; --surface: #131B21; --ink: #E3EAEE; --muted: #93A3AF; --rule: #25313A;
+  --accent: #5ECDBF; --band-bg: #DDE7EC; --band-fg: #0C1217; --band-muted: #43535E;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 76px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-block: 0 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 760px; margin: 0 auto; }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.mast { padding-block: 24px 14px; }
+.kicker {
+  margin: 0 0 6px;
+  font-family: var(--display); font-weight: 700; font-size: 15px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+}
+.kicker a { color: inherit; text-decoration: none; }
+h1 {
+  margin: 0;
+  font-family: var(--display); font-weight: 700;
+  font-size: clamp(32px, 8vw, 54px); line-height: 1.02; text-wrap: balance;
+}
+.stamp { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+
+.nav {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; gap: 8px; overflow-x: auto;
+  padding-block: 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  scrollbar-width: thin;
+}
+.chip {
+  flex: 0 0 auto; display: inline-flex; align-items: center;
+  min-height: 40px; padding: 0 14px;
+  border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--surface); color: var(--ink); text-decoration: none;
+  font-family: var(--display); font-weight: 700; font-size: 16px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip[aria-current="page"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+.band { background: var(--band-bg); color: var(--band-fg); padding: 22px 20px 6px; margin-block: 20px; }
+.band h2 {
+  margin: 0 0 6px; font-family: var(--display); font-weight: 500; font-size: 15px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--band-muted);
+}
+.top { list-style: none; margin: 0; padding: 0; }
+.top li {
+  padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--band-fg) 22%, transparent);
+  font-family: var(--display); font-weight: 700; font-size: clamp(22px, 5.4vw, 30px);
+  line-height: 1.15; text-wrap: balance;
+}
+.top li:first-child { border-top: 0; }
+
+.topic { padding-block: 28px 8px; border-bottom: 1px solid var(--rule); }
+.topic h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.1; }
+.topic h2 a { color: inherit; text-decoration: none; }
+.topic h2 a:hover { color: var(--accent); }
+.lead { margin: 0 0 4px; color: var(--muted); font-size: 16px; }
+.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; padding-block: 14px 8px; }
+.item h3 { margin: 0 0 4px; font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.item p { margin: 0; max-width: 65ch; }
+.src { margin: 6px 0 22px; font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.src .lab { font-family: var(--display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.src a { min-width: 0; overflow-wrap: anywhere; }
+
+.daybar { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 22px 0; }
+.daybar h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 24px; }
+.daybar a { font-size: 15px; }
+.catday { padding-block: 22px 4px; border-bottom: 1px solid var(--rule); }
+.catday h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 22px; }
+.catday h2 a { color: var(--accent); text-decoration: none; }
+.catday h2 a:hover { text-decoration: underline; }
+
+.archive { padding-block: 32px 0; }
+.archive h2 { margin: 0 0 8px; font-family: var(--display); font-weight: 700; font-size: 26px; }
+.days { list-style: none; margin: 0; padding: 0; }
+.day {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px;
+  padding: 12px 0; border-top: 1px solid var(--rule); color: var(--ink); text-decoration: none;
+}
+.day .d { font-family: var(--display); font-weight: 700; font-size: 18px; }
+.day .h { color: var(--muted); font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.day:hover .d { color: var(--accent); }
+.day[aria-current="true"] .d { color: var(--accent); }
+
+.search { display: flex; gap: 8px; margin-block: 22px 8px; }
+.search input {
+  flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 0 12px;
+  border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--surface); color: var(--ink); font: inherit; font-size: 17px;
+}
+.search button {
+  flex: 0 0 auto; min-height: 44px; padding: 0 18px; border: 0; border-radius: 4px;
+  background: var(--accent); color: var(--bg); cursor: pointer;
+  font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.hit { padding-block: 14px; border-top: 1px solid var(--rule); }
+.hit .meta { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.hit h3 { margin: 2px 0 4px; font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.hit p { margin: 0; max-width: 65ch; }
+
+.empty { padding: 36px 0; max-width: 52ch; }
+.empty h2 { margin: 0 0 8px; font-family: var(--display); font-size: 28px; }
+.empty p { margin: 0; color: var(--muted); }
+.foot { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); max-width: 65ch; }
+
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="kicker"><a href="#/">Πρωινή ενημέρωση</a></p>
+    <h1 id="title">Ειδήσεις της ημέρας</h1>
+    <p class="stamp" id="stamp"></p>
+  </header>
+  <nav class="nav" id="nav" aria-label="Θέματα"></nav>
+  <main id="app" aria-live="polite">
+    <div class="empty"><h2>Φόρτωση…</h2><p>Χρειάζεται JavaScript για να εμφανιστούν οι ειδήσεις.</p></div>
+  </main>
+  <p class="foot">
+    Αυτόματη καθημερινή περίληψη στα ελληνικά, γραμμένη από τεχνητή νοημοσύνη (Claude) με βάση δημοσιευμένες πηγές, που αναφέρονται κάτω από κάθε θέμα. Δεν αντικαθιστά τις ίδιες τις πηγές και μπορεί να περιέχει λάθη ή παραλείψεις. Για κάτι σημαντικό, έλεγξε την αρχική πηγή. Οι ιατρικές ειδήσεις δεν αποτελούν ιατρική συμβουλή.
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TOPICS = [
+    ['geo', 'Γεωπολιτική'], ['eco', 'Οικονομία'], ['tech', 'Τεχνολογία'],
+    ['sci', 'Επιστήμη'], ['med', 'Ιατρική'], ['arch', 'Αρχαιολογία'], ['watch', 'Παρακολούθηση']
+  ];
+  var TITLES = {};
+  TOPICS.forEach(function (t) { TITLES[t[0]] = t[1]; });
+  var CAT_DAYS = 14;
+  var SEARCH_DAYS = 120;
+
+  var app = document.getElementById('app');
+  var titleEl = document.getElementById('title');
+  var stampEl = document.getElementById('stamp');
+  var navEl = document.getElementById('nav');
+  var fmt = new Intl.DateTimeFormat('el-GR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var cache = {};
+  var indexPromise = null;
+  var routeToken = 0;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function link(href, cls, text) {
+    var a = el('a', cls, text);
+    a.href = href;
+    return a;
+  }
+  function fmtDate(s) {
+    var d = new Date(String(s) + 'T12:00:00');
+    return isNaN(d.getTime()) ? String(s) : fmt.format(d);
+  }
+  function safeUrl(u) {
+    try {
+      var x = new URL(u);
+      return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : null;
+    } catch (e) { return null; }
+  }
+  function validDate(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s)); }
+  function norm(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ς/g, 'σ');
+  }
+  function reduced() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function getJSON(path) {
+    if (!cache[path]) {
+      cache[path] = fetch(path, { cache: 'no-cache' }).then(function (r) {
+        if (!r.ok) throw new Error(path + ' ' + r.status);
+        return r.json();
+      });
+      cache[path].catch(function () { delete cache[path]; });
+    }
+    return cache[path];
+  }
+  function getIndex() {
+    if (!indexPromise) {
+      indexPromise = getJSON('data/index.json').then(function (x) {
+        var days = (x && Array.isArray(x.days)) ? x.days.filter(function (d) { return validDate(d.date); }) : [];
+        days.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+        return days;
+      });
+      indexPromise.catch(function () { indexPromise = null; });
+    }
+    return indexPromise;
+  }
+  function getDay(date) { return getJSON('data/' + date + '.json'); }
+
+  /* ---------- shared pieces ---------- */
+
+  function renderNav(active) {
+    navEl.replaceChildren();
+    var home = link('#/', 'chip', 'Σήμερα');
+    if (active === 'home') home.setAttribute('aria-current', 'page');
+    navEl.append(home);
+    TOPICS.forEach(function (t) {
+      var a = link('#/t/' + t[0], 'chip', t[1]);
+      if (active === 't:' + t[0]) a.setAttribute('aria-current', 'page');
+      navEl.append(a);
+    });
+    var arch = link('#/archive', 'chip', 'Αρχείο και αναζήτηση');
+    if (active === 'archive') arch.setAttribute('aria-current', 'page');
+    navEl.append(arch);
+  }
+
+  function itemsList(t) {
+    var ul = el('ul', 'items');
+    (t.items || []).forEach(function (i) {
+      var li = el('li', 'item');
+      if (i.h) li.append(el('h3', null, i.h));
+      li.append(el('p', null, i.t || ''));
+      ul.append(li);
+    });
+    return ul;
+  }
+  function sourcesLine(t) {
+    var srcs = (t.sources || []).filter(function (x) { return x && safeUrl(x.url); });
+    if (!srcs.length) return null;
+    var p = el('p', 'src');
+    p.append(el('span', 'lab', 'Πηγές'));
+    srcs.forEach(function (x) {
+      var a = el('a', null, x.title || x.url);
+      a.href = safeUrl(x.url);
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      p.append(a);
+    });
+    return p;
+  }
+  function topicSection(t, withLink) {
+    var s = el('section', 'topic');
+    s.id = 't-' + t.key;
+    var h = el('h2');
+    if (withLink && TITLES[t.key]) h.append(link('#/t/' + t.key, null, t.title || TITLES[t.key]));
+    else h.textContent = t.title || TITLES[t.key] || '';
+    s.append(h);
+    if (t.lead) s.append(el('p', 'lead', t.lead));
+    s.append(itemsList(t));
+    var src = sourcesLine(t);
+    if (src) s.append(src);
+    return s;
+  }
+  function topBand(top) {
+    if (!Array.isArray(top) || !top.length) return null;
+    var band = el('section', 'band');
+    band.append(el('h2', null, 'Τα κορυφαία'));
+    var ul = el('ul', 'top');
+    top.forEach(function (t) { ul.append(el('li', null, t)); });
+    band.append(ul);
+    return band;
+  }
+  function message(title, text) {
+    app.replaceChildren();
+    var box = el('div', 'empty');
+    box.append(el('h2', null, title));
+    box.append(el('p', null, text));
+    app.append(box);
+  }
+  function setHead(title, stamp, docTitle) {
+    titleEl.textContent = title;
+    stampEl.textContent = stamp || '';
+    document.title = docTitle ? docTitle + ' · Πρωινή Ενημέρωση' : 'Πρωινή Ενημέρωση';
+  }
+  function dayList(days, currentDate) {
+    var list = el('ul', 'days');
+    days.forEach(function (d) {
+      var li = el('li');
+      var a = link('#/d/' + d.date, 'day');
+      if (d.date === currentDate) a.setAttribute('aria-current', 'true');
+      a.append(el('span', 'd', fmtDate(d.date)));
+      a.append(el('span', 'h', (d.top && d.top[0]) || d.label || ''));
+      li.append(a);
+      list.append(li);
+    });
+    return list;
+  }
+
+  /* ---------- views ---------- */
+
+  async function viewDay(date, token) {
+    var days = await getIndex();
+    if (!days.length) {
+      renderNav('home');
+      setHead('Ειδήσεις της ημέρας', '');
+      message('Δεν υπάρχουν ακόμα ειδήσεις', 'Η πρώτη περίληψη εμφανίζεται εδώ αυτόματα, κάθε πρωί γύρω στις 09:00.');
+      return;
+    }
+    var entry = date ? days.filter(function (d) { return d.date === date; })[0] : days[0];
+    if (!entry) {
+      renderNav('archive');
+      setHead('Δεν βρέθηκε η ημέρα', '');
+      message('Δεν υπάρχει περίληψη για αυτή την ημερομηνία', 'Διάλεξε μία από τις διαθέσιμες ημέρες στο αρχείο.');
+      var back = link('#/archive', null, 'Προς το αρχείο');
+      back.style.display = 'inline-block';
+      back.style.marginTop = '12px';
+      app.append(back);
+      return;
+    }
+    var doc = await getDay(entry.date);
+    if (token !== routeToken) return;
+    renderNav(date ? 'archive' : 'home');
+    setHead(doc.label || fmtDate(doc.date), 'Έκδοση ' + fmtDate(doc.date), doc.label || fmtDate(doc.date));
+    app.replaceChildren();
+    var band = topBand(doc.top);
+    if (band) app.append(band);
+    (doc.topics || []).forEach(function (t) { app.append(topicSection(t, true)); });
+    if (days.length > 1) {
+      var arch = el('section', 'archive');
+      arch.append(el('h2', null, 'Προηγούμενες ημέρες'));
+      arch.append(dayList(days.slice(0, 7), entry.date));
+      arch.append(link('#/archive', null, 'Όλο το αρχείο και αναζήτηση'));
+      app.append(arch);
+    }
+  }
+
+  async function viewCategory(key, token) {
+    var name = TITLES[key];
+    if (!name) { return viewDay(null, token); }
+    renderNav('t:' + key);
+    setHead(name, 'Τελευταίες ειδήσεις του θέματος, από την πιο πρόσφατη ημέρα', name);
+    var days = await getIndex();
+    var recent = days.slice(0, CAT_DAYS);
+    if (!recent.length) {
+      message('Δεν υπάρχουν ακόμα ειδήσεις', 'Θα εμφανιστούν εδώ μόλις δημοσιευτεί η πρώτη περίληψη.');
+      return;
+    }
+    var docs = await Promise.all(recent.map(function (d) {
+      return getDay(d.date).catch(function () { return null; });
+    }));
+    if (token !== routeToken) return;
+    app.replaceChildren();
+    var shown = 0;
+    docs.forEach(function (doc) {
+      if (!doc) return;
+      var t = (doc.topics || []).filter(function (x) { return x.key === key; })[0];
+      if (!t || !(t.items || []).length) return;
+      shown++;
+      var wrap = el('section', 'catday');
+      var h = el('h2');
+      h.append(link('#/d/' + doc.date, null, fmtDate(doc.date)));
+      wrap.append(h);
+      if (t.lead) wrap.append(el('p', 'lead', t.lead));
+      wrap.append(itemsList(t));
+      var src = sourcesLine(t);
+      if (src) wrap.append(src);
+      app.append(wrap);
+    });
+    if (!shown) message('Τίποτα αξιόλογο ακόμα', 'Δεν υπάρχουν ειδήσεις για αυτό το θέμα στις πρόσφατες ημέρες.');
+    else if (days.length > CAT_DAYS) {
+      var more = el('p', 'lead', 'Εμφανίζονται οι τελευταίες ' + CAT_DAYS + ' ημέρες. Για παλαιότερες, χρησιμοποίησε την αναζήτηση στο αρχείο.');
+      more.style.marginTop = '20px';
+      app.append(more);
+    }
+  }
+
+  async function viewArchive(query, token) {
+    renderNav('archive');
+    setHead('Αρχείο', 'Όλες οι ημέρες και αναζήτηση στο κείμενο', 'Αρχείο');
+    var days = await getIndex();
+    if (token !== routeToken) return;
+    app.replaceChildren();
+
+    var form = el('form', 'search');
+    form.setAttribute('role', 'search');
+    var input = el('input');
+    input.type = 'search';
+    input.name = 'q';
+    input.placeholder = 'Αναζήτηση, π.χ. Ορμούζ, FDA, Μυκήνες';
+    input.setAttribute('aria-label', 'Αναζήτηση στις ειδήσεις');
+    input.value = query || '';
+    var btn = el('button', null, 'Αναζήτηση');
+    btn.type = 'submit';
+    form.append(input, btn);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var q = input.value.trim();
+      location.hash = q ? '#/archive?q=' + encodeURIComponent(q) : '#/archive';
+    });
+    app.append(form);
+
+    var out = el('div');
+    app.append(out);
+
+    if (query) {
+      out.append(el('p', 'lead', 'Αναζήτηση…'));
+      var subset = days.slice(0, SEARCH_DAYS);
+      var docs = await Promise.all(subset.map(function (d) {
+        return getDay(d.date).catch(function () { return null; });
+      }));
+      if (token !== routeToken) return;
+      var words = norm(query).split(/\s+/).filter(Boolean);
+      var hits = [];
+      docs.forEach(function (doc) {
+        if (!doc) return;
+        (doc.topics || []).forEach(function (t) {
+          (t.items || []).forEach(function (i) {
+            var hay = norm((i.h || '') + ' ' + (i.t || ''));
+            if (words.every(function (w) { return hay.indexOf(w) !== -1; })) {
+              hits.push({ date: doc.date, topic: t.title || TITLES[t.key] || '', item: i });
+            }
+          });
+        });
+      });
+      out.replaceChildren();
+      out.append(el('p', 'lead', hits.length ? hits.length + ' αποτελέσματα' : 'Κανένα αποτέλεσμα για «' + query + '».'));
+      hits.slice(0, 100).forEach(function (h) {
+        var box = el('div', 'hit');
+        box.append(el('div', 'meta', fmtDate(h.date) + ' · ' + h.topic));
+        var title = el('h3');
+        title.append(link('#/d/' + h.date, null, h.item.h || h.topic));
+        box.append(title);
+        box.append(el('p', null, h.item.t || ''));
+        out.append(box);
+      });
+    }
+
+    var arch = el('section', 'archive');
+    arch.append(el('h2', null, 'Όλες οι ημέρες'));
+    if (days.length) arch.append(dayList(days, null));
+    else arch.append(el('p', 'lead', 'Δεν υπάρχουν ακόμα ημέρες.'));
+    app.append(arch);
+  }
+
+  /* ---------- router ---------- */
+
+  function route() {
+    var token = ++routeToken;
+    var h = location.hash.replace(/^#\/?/, '');
+    var q = '';
+    var qi = h.indexOf('?');
+    if (qi !== -1) {
+      try { q = new URLSearchParams(h.slice(qi + 1)).get('q') || ''; } catch (e) { q = ''; }
+      h = h.slice(0, qi);
+    }
+    var parts = h.split('/').filter(Boolean);
+    var p;
+    if (parts[0] === 't' && parts[1]) p = viewCategory(parts[1], token);
+    else if (parts[0] === 'd' && validDate(parts[1])) p = viewDay(parts[1], token);
+    else if (parts[0] === 'archive') p = viewArchive(q, token);
+    else p = viewDay(null, token);
+    p.then(function () {
+      if (token === routeToken) window.scrollTo({ top: 0, behavior: 'auto' });
+    }).catch(function () {
+      if (token !== routeToken) return;
+      renderNav('home');
+      setHead('Ειδήσεις της ημέρας', '');
+      message('Δεν φορτώνουν οι ειδήσεις', 'Δεν μπόρεσα να διαβάσω τα δεδομένα αυτή τη στιγμή. Ανανέωσε τη σελίδα σε λίγο.');
+    });
+  }
+
+  window.addEventListener('hashchange', route);
+  renderNav('home');
+  route();
+})();
+</script>
+</body>
+</html>
